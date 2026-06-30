@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Surat Jalan - PT. SARANA KENCANANA MULYA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- jsPDF + AutoTable untuk PDF murni -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -41,6 +43,9 @@
             z-index: 0;
         }
 
+        /* ===================== */
+        /* STYLE HALAMAN SURAT   */
+        /* ===================== */
         #surat-jalan {
             font-family: 'Courier Prime', 'Courier New', monospace;
             background: #ffffff;
@@ -82,9 +87,7 @@
             margin-bottom: 10px;
         }
 
-        #surat-jalan .kepada-section .kepada-label {
-            font-weight: 700;
-        }
+        #surat-jalan .kepada-section .kepada-label { font-weight: 700; }
 
         #surat-jalan .kepada-section input {
             border: none;
@@ -213,6 +216,9 @@
             padding-top: 4px;
         }
 
+        /* ===================== */
+        /* UI TOOLBAR & EFEK    */
+        /* ===================== */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -231,15 +237,9 @@
             border: 1px solid #10b981;
         }
 
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
+        .toast.show { transform: translateY(0); opacity: 1; }
 
-        .toast.error {
-            background: #7f1d1d;
-            border-color: #ef4444;
-        }
+        .toast.error { background: #7f1d1d; border-color: #ef4444; }
 
         .btn-action {
             display: inline-flex;
@@ -274,11 +274,7 @@
             box-shadow: 0 4px 20px rgba(16,185,129,0.3);
         }
 
-        .btn-pdf:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(16,185,129,0.4);
-        }
-
+        .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(16,185,129,0.4); }
         .btn-pdf:active { transform: translateY(0); }
 
         .btn-reset {
@@ -287,11 +283,7 @@
             border: 1px solid #334155;
         }
 
-        .btn-reset:hover {
-            color: #f1f5f9;
-            border-color: #64748b;
-            background: rgba(255,255,255,0.03);
-        }
+        .btn-reset:hover { color: #f1f5f9; border-color: #64748b; background: rgba(255,255,255,0.03); }
 
         .btn-add-row {
             background: transparent;
@@ -301,9 +293,7 @@
             padding: 8px 20px;
         }
 
-        .btn-add-row:hover {
-            background: rgba(16,185,129,0.08);
-        }
+        .btn-add-row:hover { background: rgba(16,185,129,0.08); }
 
         .btn-remove-row {
             background: none;
@@ -316,9 +306,7 @@
             transition: background 0.2s;
         }
 
-        .btn-remove-row:hover {
-            background: rgba(239,68,68,0.1);
-        }
+        .btn-remove-row:hover { background: rgba(239,68,68,0.1); }
 
         .preview-wrapper {
             background: #1a1f2e;
@@ -339,10 +327,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .animate-fade-up {
-            animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-
+        .animate-fade-up { animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
         .delay-1 { animation-delay: 0.1s; opacity: 0; }
         .delay-2 { animation-delay: 0.2s; opacity: 0; }
         .delay-3 { animation-delay: 0.3s; opacity: 0; }
@@ -369,22 +354,13 @@
             animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         @media print {
             body > *:not(#surat-jalan) { display: none !important; }
-            #surat-jalan {
-                width: 100%;
-                padding: 10mm 15mm;
-                box-shadow: none;
-            }
-            /* Sembunyikan kolom aksi saat print */
+            #surat-jalan { width: 100%; padding: 10mm 15mm; box-shadow: none; }
             #surat-jalan table.main-table thead th:last-child,
-            #surat-jalan table.main-table tbody td:last-child {
-                display: none !important;
-            }
+            #surat-jalan table.main-table tbody td:last-child { display: none !important; }
         }
     </style>
 </head>
@@ -396,7 +372,7 @@
     <div class="loading-overlay" id="loadingOverlay">
         <div style="text-align:center;">
             <div class="loading-spinner" style="margin:0 auto 16px;"></div>
-            <p style="color:#94a3b8;font-size:14px;">Membuat PDF...</p>
+            <p style="color:#94a3b8;font-size:14px;">Membuat PDF murni...</p>
         </div>
     </div>
 
@@ -475,8 +451,7 @@
                             <th class="col-aksi"></th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody">
-                    </tbody>
+                    <tbody id="tableBody"></tbody>
                 </table>
 
                 <!-- PENUTUP -->
@@ -502,12 +477,11 @@
                 </div>
 
             </div>
-
         </div>
 
         <div style="text-align:center;margin-top:20px;color:#475569;font-size:12px;">
             <i class="fa-solid fa-circle-info" style="margin-right:4px;"></i>
-            Klik langsung pada kolom di atas untuk mengisi data. Hasil PDF akan persis seperti tampilan di atas.
+            Klik langsung pada kolom di atas untuk mengisi data. Hasil PDF murni (teks asli, bukan gambar).
         </div>
 
     </main>
@@ -567,121 +541,174 @@
             });
         }
 
-        // =============================================
-        // GANTI SEMUA INPUT JADI TEKS SPAN
-        // =============================================
-        function flattenInputs(element) {
-            const inputs = element.querySelectorAll('input');
-            const backups = [];
-
-            inputs.forEach(input => {
-                const val = input.value || '';
-                const span = document.createElement('span');
-                const computed = window.getComputedStyle(input);
-                span.style.fontFamily = computed.fontFamily;
-                span.style.fontSize = computed.fontSize;
-                span.style.textAlign = computed.textAlign;
-                span.style.display = input.style.display || 'inline';
-                span.style.width = input.style.width || 'auto';
-                span.style.marginLeft = input.style.marginLeft || '0';
-                span.style.padding = input.style.padding || '0';
-                span.style.borderBottom = computed.borderBottom;
-                span.style.minHeight = computed.height;
-                span.style.lineHeight = computed.lineHeight;
-                span.textContent = val;
-                input.parentNode.replaceChild(span, input);
-                backups.push({ span: span, input: input });
-            });
-
-            return backups;
-        }
-
-        function restoreInputs(backups) {
-            backups.forEach(({ span, input }) => {
-                span.parentNode.replaceChild(input, span);
-            });
-        }
-
-        // =============================================
-        // HAPUS KOLOM AKSI DARI DOM SAAT PDF
-        // (bukan sembunyikan, tapi benar-benar dihapus)
-        // =============================================
-        function removeActionColumn(element) {
-            const removed = [];
-
-            // Hapus th terakhir di thead
-            const thLast = element.querySelector('table.main-table thead th.col-aksi');
-            if (thLast) {
-                thLast.parentNode.removeChild(thLast);
-                removed.push({ parent: element.querySelector('table.main-table thead tr'), node: thLast, type: 'th' });
-            }
-
-            // Hapus td terakhir di setiap baris tbody
-            element.querySelectorAll('table.main-table tbody td.col-aksi').forEach(td => {
-                const parent = td.parentNode;
-                parent.removeChild(td);
-                removed.push({ parent: parent, node: td, type: 'td' });
-            });
-
-            return removed;
-        }
-
-        function restoreActionColumn(removed) {
-            // Kembalikan dari belakang agar urutan benar
-            for (let i = removed.length - 1; i >= 0; i--) {
-                const item = removed[i];
-                item.parent.appendChild(item.node);
-            }
-        }
-
-        async function downloadPDF() {
+        // =========================================================
+        // DOWNLOAD PDF MURNI MENGGUNAKAN jsPDF + AutoTable
+        // (Bukan screenshot gambar, tapi teks vektor asli)
+        // =========================================================
+        function downloadPDF() {
             const overlay = document.getElementById('loadingOverlay');
             overlay.classList.add('active');
 
-            const element = document.getElementById('surat-jalan');
-            const filename = 'Surat_Jalan_PT_Sarana_Kencana_Mulya.pdf';
-
-            // 1) HAPUS kolom aksi dari DOM (tombol X merah)
-            const removedCols = removeActionColumn(element);
-
-            // 2) Ganti semua <input> menjadi <span> berisi teksnya
-            const backups = flattenInputs(element);
-
-            // Tunggu DOM stabil
-            await new Promise(r => setTimeout(r, 300));
-
-            const opt = {
-                margin: 0,
-                filename: filename,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: {
-                    scale: 2,
-                    useCORS: true,
-                    letterRendering: true,
-                    logging: false,
-                    allowTaint: true
-                },
-                jsPDF: {
-                    unit: 'mm',
-                    format: 'a4',
-                    orientation: 'portrait'
-                },
-                pagebreak: { mode: ['avoid-all'] }
-            };
-
             try {
-                await html2pdf().set(opt).from(element).save();
-                showToast('PDF berhasil diunduh!');
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const pageW = doc.internal.pageSize.getWidth();   // 210
+                const pageH = doc.internal.pageSize.getHeight();  // 297
+                const marginL = 18;
+                const marginR = 18;
+                const contentW = pageW - marginL - marginR;      // 174
+                let y = 15; // posisi Y awal
+
+                // ---- FONT ----
+                // jsPDF built-in courier adalah monospace, paling mendekati Courier Prime
+                doc.setFont('courier', 'normal');
+
+                // ---- KOP SURAT ----
+                doc.setFontSize(14);
+                doc.setFont('courier', 'bold');
+                doc.text('PT. SARANA KENCANA MULYA', marginL, y);
+                y += 5;
+
+                doc.setFontSize(8);
+                doc.setFont('courier', 'normal');
+                doc.setTextColor(60, 60, 60);
+                doc.text('Jl. Raya Industri No. 88, Kawasan Industri MM2100', marginL, y); y += 3.5;
+                doc.text('Bekasi, Jawa Barat 17520 - Telp: (021) 8888-7777', marginL, y); y += 3.5;
+                doc.text('NPWP: 01.234.567.8-012.000', marginL, y); y += 3;
+
+                // Garis ganda kop surat
+                doc.setTextColor(0, 0, 0);
+                doc.setLineWidth(0.8);
+                doc.line(marginL, y, pageW - marginR, y);
+                doc.setLineWidth(0.3);
+                doc.line(marginL, y + 1.2, pageW - marginR, y + 1.2);
+                y += 7;
+
+                // ---- KEPADA YTH. ----
+                doc.setFontSize(9);
+                doc.setFont('courier', 'bold');
+                doc.text('Kepada Yth,', marginL, y);
+
+                doc.setFont('courier', 'normal');
+                const namaPenerima = document.getElementById('kepadaNama').value || ' ';
+                doc.text(namaPenerima, marginL + doc.getTextWidth('Kepada Yth,  '), y);
+                y += 4.5;
+
+                const alamatPenerima = document.getElementById('kepadaAlamat').value || ' ';
+                doc.text(alamatPenerima, marginL + 14, y);
+                y += 8;
+
+                // ---- JUDUL SURAT JALAN ----
+                doc.setFontSize(14);
+                doc.setFont('courier', 'bold');
+                const titleText = 'SURAT JALAN';
+                const titleW = doc.getTextWidth(titleText);
+                doc.text(titleText, (pageW - titleW) / 2, y);
+                y += 4;
+
+                // Garis bawah judul
+                doc.setLineWidth(0.3);
+                const titleStartX = (pageW - titleW) / 2 - 2;
+                const titleEndX = (pageW + titleW) / 2 + 2;
+                doc.line(titleStartX, y, titleEndX, y);
+                y += 6;
+
+                // ---- NOMOR SURAT ----
+                doc.setFontSize(9);
+                doc.setFont('courier', 'normal');
+                const noSurat = document.getElementById('noSurat').value || ' ';
+                doc.text('No: ' + noSurat, (pageW - doc.getTextWidth('No: ' + noSurat)) / 2, y);
+                y += 7;
+
+                // ---- TEKS PENGANTAR ----
+                doc.text('Bersama ini kami kirimkan barang-barang melalui : ' + (document.getElementById('melalui').value || ' '), marginL, y);
+                y += 4.5;
+                doc.text('sebagaimana tersebut di bawah ini.', marginL, y);
+                y += 7;
+
+                // ---- AMBIL DATA TABEL ----
+                const rows = document.querySelectorAll('#tableBody tr');
+                const tableData = [];
+                rows.forEach((row, idx) => {
+                    const inputs = row.querySelectorAll('input');
+                    tableData.push([
+                        String(idx + 1),
+                        inputs[1] ? inputs[1].value : '',
+                        inputs[2] ? inputs[2].value : '',
+                        inputs[3] ? inputs[3].value : '',
+                        inputs[4] ? inputs[4].value : ''
+                    ]);
+                });
+
+                // ---- GAMBAR TABEL DENGAN AUTOTABLE ----
+                doc.autoTable({
+                    startY: y,
+                    margin: { left: marginL, right: marginR },
+                    theme: 'plain',
+                    styles: {
+                        font: 'courier',
+                        fontSize: 9,
+                        cellPadding: 2.5,
+                        lineColor: [0, 0, 0],
+                        lineWidth: 0.2,
+                        textColor: [0, 0, 0],
+                        valign: 'middle'
+                    },
+                    headStyles: {
+                        fillColor: [245, 245, 245],
+                        textColor: [0, 0, 0],
+                        fontStyle: 'bold',
+                        fontSize: 8,
+                        halign: 'center'
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 10, halign: 'center' },  // No
+                        1: { cellWidth: 'auto', halign: 'left' }, // Nama Barang
+                        2: { cellWidth: 'auto', halign: 'left' }, // Type
+                        3: { cellWidth: 22, halign: 'center' },  // Banyaknya
+                        4: { cellWidth: 'auto', halign: 'left' }  // Keterangan
+                    },
+                    head: [['No', 'Nama Barang', 'Type', 'Banyaknya', 'Keterangan']],
+                    body: tableData
+                });
+
+                y = doc.lastAutoTable.finalY + 7;
+
+                // ---- PENUTUP ----
+                doc.setFont('courier', 'normal');
+                doc.setFontSize(9);
+                doc.text('Harap di terima dengan baik.', marginL, y);
+                y += 25;
+
+                // ---- TANDA TANGAN ----
+                const sigColW = contentW / 3;
+                doc.setFont('courier', 'bold');
+                doc.setFontSize(9);
+
+                doc.text('Pengirim', marginL + sigColW * 0.5 - doc.getTextWidth('Pengirim') / 2, y);
+                doc.text('Supir', marginL + sigColW * 1.5 - doc.getTextWidth('Supir') / 2, y);
+                doc.text('Penerima', marginL + sigColW * 2.5 - doc.getTextWidth('Penerima') / 2, y);
+
+                y += 22;
+
+                doc.setFont('courier', 'normal');
+                doc.text('(____________________)', marginL + sigColW * 0.5 - doc.getTextWidth('(____________________)') / 2, y);
+                doc.text('(____________________)', marginL + sigColW * 1.5 - doc.getTextWidth('(____________________)') / 2, y);
+                doc.text('(____________________)', marginL + sigColW * 2.5 - doc.getTextWidth('(____________________)') / 2, y);
+
+                // ---- SIMPAN ----
+                doc.save('Surat_Jalan_PT_Sarana_Kencana_Mulya.pdf');
+                showToast('PDF murni berhasil diunduh!');
+
             } catch (err) {
-                console.error('html2pdf gagal:', err);
-                showToast('Gagal membuat PDF. Coba Ctrl+P lalu Save as PDF.', true);
+                console.error('Gagal membuat PDF:', err);
+                showToast('Gagal membuat PDF. Periksa konsol browser.', true);
             }
-
-            // 3) Kembalikan <span> menjadi <input>
-            restoreInputs(backups);
-
-            // 4) Kembalikan kolom aksi ke DOM
-            restoreActionColumn(removedCols);
 
             overlay.classList.remove('active');
         }
