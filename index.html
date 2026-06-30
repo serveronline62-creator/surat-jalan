@@ -82,7 +82,9 @@
             margin-bottom: 10px;
         }
 
-        #surat-jalan .kepada-section .kepada-label { font-weight: 700; }
+        #surat-jalan .kepada-section .kepada-label {
+            font-weight: 700;
+        }
 
         #surat-jalan .kepada-section input {
             border: none;
@@ -159,6 +161,7 @@
         #surat-jalan table.main-table thead th:nth-child(2) { width: 35%; }
         #surat-jalan table.main-table thead th:nth-child(4) { width: 80px; }
         #surat-jalan table.main-table thead th:nth-child(5) { width: 35%; }
+        #surat-jalan table.main-table thead th:nth-child(6) { width: 28px; }
 
         #surat-jalan table.main-table tbody td {
             border: 1px solid #000;
@@ -205,7 +208,10 @@
 
         #surat-jalan .sig-box { text-align: center; }
         #surat-jalan .sig-space { height: 60px; }
-        #surat-jalan .sig-name { font-weight: 700; padding-top: 4px; }
+        #surat-jalan .sig-name {
+            font-weight: 700;
+            padding-top: 4px;
+        }
 
         .toast {
             position: fixed;
@@ -225,8 +231,15 @@
             border: 1px solid #10b981;
         }
 
-        .toast.show { transform: translateY(0); opacity: 1; }
-        .toast.error { background: #7f1d1d; border-color: #ef4444; }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: #7f1d1d;
+            border-color: #ef4444;
+        }
 
         .btn-action {
             display: inline-flex;
@@ -288,7 +301,9 @@
             padding: 8px 20px;
         }
 
-        .btn-add-row:hover { background: rgba(16,185,129,0.08); }
+        .btn-add-row:hover {
+            background: rgba(16,185,129,0.08);
+        }
 
         .btn-remove-row {
             background: none;
@@ -301,7 +316,9 @@
             transition: background 0.2s;
         }
 
-        .btn-remove-row:hover { background: rgba(239,68,68,0.1); }
+        .btn-remove-row:hover {
+            background: rgba(239,68,68,0.1);
+        }
 
         .preview-wrapper {
             background: #1a1f2e;
@@ -322,7 +339,10 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .animate-fade-up { animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        .animate-fade-up {
+            animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
         .delay-1 { animation-delay: 0.1s; opacity: 0; }
         .delay-2 { animation-delay: 0.2s; opacity: 0; }
         .delay-3 { animation-delay: 0.3s; opacity: 0; }
@@ -349,12 +369,17 @@
             animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
         @media print {
             body > *:not(#surat-jalan) { display: none !important; }
-            #surat-jalan { width: 100%; padding: 10mm 15mm; box-shadow: none; }
-            .btn-remove-row, th:last-child, td:last-child { display: none !important; }
+            #surat-jalan {
+                width: 100%;
+                padding: 10mm 15mm;
+                box-shadow: none;
+            }
         }
     </style>
 </head>
@@ -407,6 +432,7 @@
 
             <div id="surat-jalan">
 
+                <!-- KOP SURAT -->
                 <div class="header-company">
                     <div class="company-name">PT. SARANA KENCANA MULYA</div>
                     <div class="company-address">
@@ -416,20 +442,24 @@
                     </div>
                 </div>
 
+                <!-- KEPADA YTH. -->
                 <div class="kepada-section">
                     <div><span class="kepada-label">Kepada Yth,</span> <input type="text" class="input-nama" id="kepadaNama" placeholder=" "></div>
                     <div><input type="text" class="input-alamat" id="kepadaAlamat" placeholder=" "></div>
                 </div>
 
+                <!-- JUDUL DOKUMEN -->
                 <div class="doc-title">SURAT JALAN</div>
-                <div class="doc-number">No: <span id="noSurat" style="display:inline-block;width:200px;border-bottom:1px dotted #999;"></span></div>
+                <div class="doc-number">No: <input type="text" id="noSurat" style="border:none;border-bottom:1px dotted #999;background:transparent;font-family:'Courier Prime',monospace;font-size:11px;outline:none;width:200px;padding:0 2px;"></div>
 
+                <!-- TEKS PENGANTAR -->
                 <div class="pengantar-text">
                     <div>Bersama ini kami kirimkan barang-barang melalui : <input type="text" id="melalui" placeholder=" "></div>
                     <div>sebagaimana tersebut di bawah ini.</div>
                 </div>
 
-                <table class="main-table" id="mainTable">
+                <!-- TABEL BARANG -->
+                <table class="main-table">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -437,14 +467,17 @@
                             <th>Type</th>
                             <th>Banyaknya</th>
                             <th>Keterangan</th>
-                            <th class="col-aksi"></th>
+                            <th></th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody"></tbody>
+                    <tbody id="tableBody">
+                    </tbody>
                 </table>
 
+                <!-- PENUTUP -->
                 <div class="closing-text">Harap di terima dengan baik.</div>
 
+                <!-- TANDA TANGAN -->
                 <div class="signature-section">
                     <div class="sig-box">
                         <div style="font-weight:700;">Pengirim</div>
@@ -488,7 +521,7 @@
                 <td><input class="item-input left" type="text" placeholder=" "></td>
                 <td><input class="item-input center" type="text" placeholder=" "></td>
                 <td><input class="item-input left" type="text" placeholder=" "></td>
-                <td class="col-aksi"><button class="btn-remove-row" onclick="removeRow(this)" title="Hapus baris"><i class="fa-solid fa-xmark"></i></button></td>
+                <td><button class="btn-remove-row" onclick="removeRow(this)" title="Hapus baris"><i class="fa-solid fa-xmark"></i></button></td>
             `;
             return tr;
         }
@@ -529,53 +562,95 @@
             });
         }
 
-        /* ============================================
-           BUAT SALINAN BERSIH TANPA KOLOM AKSI UNTUK PDF
-           ============================================ */
-        function createCleanClone() {
-            const original = document.getElementById('surat-jalan');
-            const clone = original.cloneNode(true);
+        // =============================================
+        // INTI PERBAIKAN: GANTI INPUT JADI TEKS
+        // SEBELUM RENDER PDF, LALU KEMBALIKAN
+        // =============================================
+        function flattenInputs(element) {
+            // Kumpulkan semua input yang akan diganti
+            const inputs = element.querySelectorAll('input');
+            const backups = [];
 
-            // Hapus header kolom aksi
-            const thAksi = clone.querySelector('th.col-aksi');
-            if (thAksi) thAksi.remove();
-
-            // Hapus sel aksi di setiap baris
-            clone.querySelectorAll('td.col-aksi').forEach(td => td.remove());
-
-            // Pastikan input di clone tetap terisi sesuai original
-            const origInputs = original.querySelectorAll('input');
-            const cloneInputs = clone.querySelectorAll('input');
-            origInputs.forEach((inp, i) => {
-                if (cloneInputs[i]) {
-                    cloneInputs[i].value = inp.value;
-                }
+            inputs.forEach(input => {
+                const val = input.value || '';
+                const span = document.createElement('span');
+                // Salin style penting agar tampilan sama
+                const computed = window.getComputedStyle(input);
+                span.style.fontFamily = computed.fontFamily;
+                span.style.fontSize = computed.fontSize;
+                span.style.textAlign = computed.textAlign;
+                span.style.display = input.style.display || 'inline';
+                span.style.width = input.style.width || 'auto';
+                span.style.marginLeft = input.style.marginLeft || '0';
+                span.style.padding = input.style.padding || '0';
+                span.style.borderBottom = computed.borderBottom;
+                span.style.minHeight = computed.height;
+                span.style.lineHeight = computed.lineHeight;
+                span.textContent = val;
+                // Ganti input dengan span
+                input.parentNode.replaceChild(span, input);
+                // Simpan backup untuk dikembalikan nanti
+                backups.push({ span: span, input: input });
             });
 
-            // Pastikan span no surat juga ikut
-            const origSpan = original.querySelector('#noSurat');
-            const cloneSpan = clone.querySelector('#noSurat');
-            if (origSpan && cloneSpan) {
-                cloneSpan.textContent = origSpan.textContent;
+            return backups;
+        }
+
+        function restoreInputs(backups) {
+            backups.forEach(({ span, input }) => {
+                span.parentNode.replaceChild(input, span);
+            });
+        }
+
+        function hideActionColumn(element) {
+            const thLast = element.querySelector('table.main-table thead th:last-child');
+            if (thLast) {
+                thLast._origW = thLast.style.width;
+                thLast.style.width = '0';
+                thLast.style.padding = '0';
+                thLast.style.border = 'none';
+                thLast.style.overflow = 'hidden';
             }
+            element.querySelectorAll('table.main-table tbody td:last-child').forEach(td => {
+                td._origW = td.style.width;
+                td.style.width = '0';
+                td.style.padding = '0';
+                td.style.border = 'none';
+                td.style.overflow = 'hidden';
+            });
+        }
 
-            // Tempatkan clone di luar layar agar bisa di-render
-            clone.style.position = 'fixed';
-            clone.style.left = '-9999px';
-            clone.style.top = '0';
-            clone.style.zIndex = '-1';
-            document.body.appendChild(clone);
-
-            return clone;
+        function showActionColumn(element) {
+            const thLast = element.querySelector('table.main-table thead th:last-child');
+            if (thLast) {
+                thLast.style.width = thLast._origW || '28px';
+                thLast.style.padding = '5px 6px';
+                thLast.style.border = '1px solid #000';
+                thLast.style.overflow = '';
+            }
+            element.querySelectorAll('table.main-table tbody td:last-child').forEach(td => {
+                td.style.width = td._origW || '';
+                td.style.padding = '4px 6px';
+                td.style.border = '1px solid #000';
+                td.style.overflow = '';
+            });
         }
 
         async function downloadPDF() {
             const overlay = document.getElementById('loadingOverlay');
             overlay.classList.add('active');
 
-            // Buat salinan bersih tanpa kolom aksi
-            const cleanClone = createCleanClone();
+            const element = document.getElementById('surat-jalan');
             const filename = 'Surat_Jalan_PT_Sarana_Kencana_Mulya.pdf';
+
+            // 1) Sembunyikan kolom aksi
+            hideActionColumn(element);
+
+            // 2) Ganti semua <input> menjadi <span> berisi teksnya
+            const backups = flattenInputs(element);
+
+            // Tunggu sebentar agar DOM selesai dirender
+            await new Promise(r => setTimeout(r, 200));
 
             const opt = {
                 margin: 0,
@@ -597,42 +672,25 @@
             };
 
             try {
-                await html2pdf().set(opt).from(cleanClone).save();
+                await html2pdf().set(opt).from(element).save();
                 showToast('PDF berhasil diunduh!');
             } catch (err) {
-                console.error('html2pdf gagal, mencoba fallback...', err);
-                try {
-                    const canvas = await html2canvas(cleanClone, {
-                        scale: 2,
-                        useCORS: true,
-                        allowTaint: true,
-                        logging: false
-                    });
-                    const imgData = canvas.toDataURL('image/jpeg', 0.98);
-                    const { jsPDF } = window.jspdf;
-                    const pdf = new jsPDF('p', 'mm', 'a4');
-                    const pdfW = pdf.internal.pageSize.getWidth();
-                    const pdfH = pdf.internal.pageSize.getHeight();
-                    const ratio = Math.min(pdfW / canvas.width, pdfH / canvas.height);
-                    const w = canvas.width * ratio;
-                    const h = canvas.height * ratio;
-                    pdf.addImage(imgData, 'JPEG', (pdfW - w) / 2, 0, w, h);
-                    pdf.save(filename);
-                    showToast('PDF berhasil diunduh (fallback)!');
-                } catch (err2) {
-                    console.error('Fallback juga gagal:', err2);
-                    showToast('Gagal membuat PDF. Coba Ctrl+P lalu "Save as PDF".', true);
-                }
-            } finally {
-                // Selalu hapus clone dari DOM setelah selesai
-                cleanClone.remove();
-                overlay.classList.remove('active');
+                console.error('html2pdf gagal:', err);
+                showToast('Gagal membuat PDF. Coba Ctrl+P lalu Save as PDF.', true);
             }
+
+            // 3) Kembalikan <span> menjadi <input>
+            restoreInputs(backups);
+
+            // 4) Tampilkan kembali kolom aksi
+            showActionColumn(element);
+
+            overlay.classList.remove('active');
         }
 
         function resetForm() {
             initRows();
-            document.getElementById('noSurat').textContent = '';
+            document.getElementById('noSurat').value = '';
             document.getElementById('kepadaNama').value = '';
             document.getElementById('kepadaAlamat').value = '';
             document.getElementById('melalui').value = '';
@@ -647,12 +705,12 @@
             toast.classList.toggle('error', !!isError);
             toast.classList.add('show');
             clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
         }
 
         initRows();
     </script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 </body>
 </html>
