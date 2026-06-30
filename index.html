@@ -380,6 +380,11 @@
                 padding: 10mm 15mm;
                 box-shadow: none;
             }
+            /* Sembunyikan kolom aksi saat print */
+            #surat-jalan table.main-table thead th:last-child,
+            #surat-jalan table.main-table tbody td:last-child {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -467,7 +472,7 @@
                             <th>Type</th>
                             <th>Banyaknya</th>
                             <th>Keterangan</th>
-                            <th></th>
+                            <th class="col-aksi"></th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -521,7 +526,7 @@
                 <td><input class="item-input left" type="text" placeholder=" "></td>
                 <td><input class="item-input center" type="text" placeholder=" "></td>
                 <td><input class="item-input left" type="text" placeholder=" "></td>
-                <td><button class="btn-remove-row" onclick="removeRow(this)" title="Hapus baris"><i class="fa-solid fa-xmark"></i></button></td>
+                <td class="col-aksi"><button class="btn-remove-row" onclick="removeRow(this)" title="Hapus baris"><i class="fa-solid fa-xmark"></i></button></td>
             `;
             return tr;
         }
@@ -563,18 +568,15 @@
         }
 
         // =============================================
-        // INTI PERBAIKAN: GANTI INPUT JADI TEKS
-        // SEBELUM RENDER PDF, LALU KEMBALIKAN
+        // GANTI SEMUA INPUT JADI TEKS SPAN
         // =============================================
         function flattenInputs(element) {
-            // Kumpulkan semua input yang akan diganti
             const inputs = element.querySelectorAll('input');
             const backups = [];
 
             inputs.forEach(input => {
                 const val = input.value || '';
                 const span = document.createElement('span');
-                // Salin style penting agar tampilan sama
                 const computed = window.getComputedStyle(input);
                 span.style.fontFamily = computed.fontFamily;
                 span.style.fontSize = computed.fontSize;
@@ -587,9 +589,7 @@
                 span.style.minHeight = computed.height;
                 span.style.lineHeight = computed.lineHeight;
                 span.textContent = val;
-                // Ganti input dengan span
                 input.parentNode.replaceChild(span, input);
-                // Simpan backup untuk dikembalikan nanti
                 backups.push({ span: span, input: input });
             });
 
@@ -602,38 +602,36 @@
             });
         }
 
-        function hideActionColumn(element) {
-            const thLast = element.querySelector('table.main-table thead th:last-child');
+        // =============================================
+        // HAPUS KOLOM AKSI DARI DOM SAAT PDF
+        // (bukan sembunyikan, tapi benar-benar dihapus)
+        // =============================================
+        function removeActionColumn(element) {
+            const removed = [];
+
+            // Hapus th terakhir di thead
+            const thLast = element.querySelector('table.main-table thead th.col-aksi');
             if (thLast) {
-                thLast._origW = thLast.style.width;
-                thLast.style.width = '0';
-                thLast.style.padding = '0';
-                thLast.style.border = 'none';
-                thLast.style.overflow = 'hidden';
+                thLast.parentNode.removeChild(thLast);
+                removed.push({ parent: element.querySelector('table.main-table thead tr'), node: thLast, type: 'th' });
             }
-            element.querySelectorAll('table.main-table tbody td:last-child').forEach(td => {
-                td._origW = td.style.width;
-                td.style.width = '0';
-                td.style.padding = '0';
-                td.style.border = 'none';
-                td.style.overflow = 'hidden';
+
+            // Hapus td terakhir di setiap baris tbody
+            element.querySelectorAll('table.main-table tbody td.col-aksi').forEach(td => {
+                const parent = td.parentNode;
+                parent.removeChild(td);
+                removed.push({ parent: parent, node: td, type: 'td' });
             });
+
+            return removed;
         }
 
-        function showActionColumn(element) {
-            const thLast = element.querySelector('table.main-table thead th:last-child');
-            if (thLast) {
-                thLast.style.width = thLast._origW || '28px';
-                thLast.style.padding = '5px 6px';
-                thLast.style.border = '1px solid #000';
-                thLast.style.overflow = '';
+        function restoreActionColumn(removed) {
+            // Kembalikan dari belakang agar urutan benar
+            for (let i = removed.length - 1; i >= 0; i--) {
+                const item = removed[i];
+                item.parent.appendChild(item.node);
             }
-            element.querySelectorAll('table.main-table tbody td:last-child').forEach(td => {
-                td.style.width = td._origW || '';
-                td.style.padding = '4px 6px';
-                td.style.border = '1px solid #000';
-                td.style.overflow = '';
-            });
         }
 
         async function downloadPDF() {
@@ -643,14 +641,14 @@
             const element = document.getElementById('surat-jalan');
             const filename = 'Surat_Jalan_PT_Sarana_Kencana_Mulya.pdf';
 
-            // 1) Sembunyikan kolom aksi
-            hideActionColumn(element);
+            // 1) HAPUS kolom aksi dari DOM (tombol X merah)
+            const removedCols = removeActionColumn(element);
 
             // 2) Ganti semua <input> menjadi <span> berisi teksnya
             const backups = flattenInputs(element);
 
-            // Tunggu sebentar agar DOM selesai dirender
-            await new Promise(r => setTimeout(r, 200));
+            // Tunggu DOM stabil
+            await new Promise(r => setTimeout(r, 300));
 
             const opt = {
                 margin: 0,
@@ -682,8 +680,8 @@
             // 3) Kembalikan <span> menjadi <input>
             restoreInputs(backups);
 
-            // 4) Tampilkan kembali kolom aksi
-            showActionColumn(element);
+            // 4) Kembalikan kolom aksi ke DOM
+            restoreActionColumn(removedCols);
 
             overlay.classList.remove('active');
         }
